@@ -1,0 +1,28 @@
+# Use a minimal Node.js base image (alpine for small size)
+FROM node:20-alpine AS base
+
+# Install dependencies: bash, curl, unzip, python3, yq and AWS CLI
+RUN apk add --no-cache \
+    bash \
+    curl \
+    unzip \
+    yq \
+    make \
+    docker \
+    && apk add aws-cli --repository=http://dl-cdn.alpinelinux.org/alpine/edge/community/
+
+# Install Pulumi (download the latest version)
+RUN curl -fsSL https://get.pulumi.com | sh && \
+    mv ~/.pulumi/bin/* /usr/local/bin/
+
+# Installing all pulumi plugins in use (this speeds up not having to redownload them on every deploy)
+RUN pulumi plugin install resource aws v6.66.1 & \
+    pulumi plugin install resource awsx v2.19.0 & \
+    pulumi plugin install resource cloudflare v5.45.0 & \
+    pulumi plugin install resource command v1.0.1 & \
+    pulumi plugin install resource docker v4.5.8 & \
+    pulumi plugin install resource tls v5.0.10 & \
+    wait
+
+# Default command (bash shell for manual use)
+CMD ["bash"]

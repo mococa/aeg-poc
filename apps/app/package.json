@@ -1,0 +1,17 @@
+{
+  "name": "@aeg-poc/app",
+  "private": true,
+  "version": "0.0.1",
+  "description": "",
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "nullstack": "0.20.3",
+    "postcss-loader": "^7.0.1",
+    "tailwindcss": "^3.0.0"
+  },
+  "scripts": {
+    "start": "npx nullstack start --port 3000",
+    "build": "npx nullstack build"
+  }
+}

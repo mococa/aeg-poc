@@ -1,0 +1,25 @@
+version: 0.0.1
+
+infrastructure:
+  domains:
+    services:
+      users:
+        development: users-dev-aeg-poc.moureau.dev
+
+      posts:
+        development: posts-dev-aeg-poc.moureau.dev
+
+      comments:
+        development: comments-dev-aeg-poc.moureau.dev
+
+      categories:
+        development: categories-dev-aeg-poc.moureau.dev
+
+    api-gateway:
+      development: api-gateway-dev-aeg-poc.moureau.dev
+
+    app:
+      development: app-dev-aeg-poc.moureau.dev
+
+    database:
+      development: database-dev-aeg-poc.moureau.dev

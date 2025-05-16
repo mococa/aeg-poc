@@ -1,0 +1,15 @@
+{
+  "name": "aeg-poc",
+  "private": true,
+  "version": "1.0.0",
+  "license": "MIT",
+  "workspaces": [
+    "apps/*",
+    "packages/*",
+    "services/*"
+  ],
+  "scripts": {
+    "build": "yarn workspace @aeg-poc/builder run start",
+    "start:api": "yarn workspace @aeg-poc/api-starter run start"
+  }
+}

@@ -1,0 +1,9 @@
+{
+  "recommendations": [
+    "dbaeumer.vscode-eslint",
+    "esbenp.prettier-vscode",
+    "apollographql.vscode-apollo",
+    "bradlc.vscode-tailwindcss",
+    "redhat.vscode-yaml"
+  ]
+}

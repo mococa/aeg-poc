@@ -1,0 +1,11 @@
+{
+  "name": "@aeg-poc/ui",
+  "private": true,
+  "version": "1.0.0",
+  "main": "src/index.tsx",
+  "license": "MIT",
+  "dependencies": {
+    "@aeg-poc/theme": "*",
+    "tailwind-merge": "^2.5.5"
+  }
+}

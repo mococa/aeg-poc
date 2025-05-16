@@ -1,0 +1,15 @@
+{
+  "name": "@aeg-poc/users-service",
+  "private": true,
+  "version": "1.0.0",
+  "main": "dist/index.js",
+  "license": "MIT",
+  "scripts": {
+    "build": "esbuild --bundle --platform=node --target=node18 --outdir=dist src/index.ts --minify",
+    "start": "node dist/index.js",
+    "serve": "npm run build && npm run start"
+  },
+  "dependencies": {
+    "@aeg-poc/schemas": "*"
+  }
+}

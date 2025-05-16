@@ -1,0 +1,25 @@
+{
+  "env": {
+    "browser": true,
+    "es2021": true
+  },
+  "extends": ["plugin:prettier/recommended"],
+  "plugins": ["@typescript-eslint", "prettier"],
+
+  "overrides": [
+    {
+      "files": ["*.{ts,tsx}", "*.{js,jsx}"],
+      "rules": {
+        "import/prefer-default-export": "error",
+        "import/no-default-export": "off",
+        "react/react-in-jsx-scope": "off",
+        "react/jsx-filename-extension": [1, { "extensions": [".js", ".jsx", ".ts", ".tsx"] }]
+      }
+    }
+  ],
+  "settings": {
+    "import/resolver": {
+      "typescript": {}
+    }
+  }
+}

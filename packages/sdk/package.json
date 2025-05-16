@@ -1,0 +1,10 @@
+{
+  "name": "@aeg-poc/sdk",
+  "private": true,
+  "version": "1.0.0",
+  "main": "src/index.ts",
+  "license": "MIT",
+  "dependencies": {
+    "@aeg-poc/models": "*"
+  }
+}
