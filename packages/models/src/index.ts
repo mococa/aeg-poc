@@ -39,6 +39,21 @@ export class BaseModel {
     delete row.created_at;
     delete row.updated_at;
   }
+
+  /**
+   * @description
+   * GraphQL schema definition for the model.
+   */
+  static get typeDefs(): string {
+    return `
+      type BaseModel @key(fields: "id") {
+        id: ID!
+        createdAt: String!
+        updatedAt: String!
+      }
+    `;
+  }
+
 }
 
 export namespace Models {
@@ -57,6 +72,16 @@ export namespace Models {
 
     static deserialize(row: Record<string, unknown>): void {
       super.deserialize(row);
+    }
+
+    static get typeDefs(): string {
+      return `
+        type User @key(fields: "id") {
+          id: ID!
+          username: String!
+          password: String!
+        }
+      `;
     }
   }
 
@@ -93,6 +118,21 @@ export namespace Models {
       row.userId = row.user_id;
       delete row.user_id;
     }
+
+    static get typeDefs(): string {
+      return `
+        type Post @key(fields: "id") {
+          id: ID!
+          title: String!
+          content: String!
+          userId: ID!
+          categoryId: ID!
+          user: User @external
+          category: Category @external
+          comments: [Comment] @external
+        }
+      `;
+    }
   }
 
   export class Category extends BaseModel {
@@ -107,6 +147,22 @@ export namespace Models {
      * Description of the category.
      */
     description: string;
+
+    static deserialize(row: Record<string, unknown>): void {
+      super.deserialize(row);
+    }
+
+    static get typeDefs(): string {
+      return `
+        type Category @key(fields: "id") {
+          id: ID!
+          name: String!
+          description: String!
+          posts: [Post] @external
+          comments: [Comment] @external
+        }
+      `;
+    }
   }
 
   export class Comment extends BaseModel {
@@ -127,5 +183,27 @@ export namespace Models {
      * ID of the post to which the comment belongs.
      */
     postId: number;
+
+    static deserialize(row: Record<string, unknown>): void {
+      super.deserialize(row);
+      row.userId = row.user_id;
+      delete row.user_id;
+
+      row.postId = row.post_id;
+      delete row.post_id;
+    }
+
+    static get typeDefs(): string {
+      return `
+        type Comment @key(fields: "id") {
+          id: ID!
+          content: String!
+          userId: ID!
+          postId: ID!
+          user: User @external
+          post: Post @external
+        }
+      `;
+    }
   }
 }
