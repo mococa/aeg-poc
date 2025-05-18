@@ -4,7 +4,6 @@
     "version": "1.0.0",
     "license": "MIT",
     "scripts": {
-        "prestart": "make build",
         "start": "make run",
         "build": "make build"
     }
