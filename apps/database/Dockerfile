@@ -1,6 +1,7 @@
-# Use the official Postgres Alpine image as a base
 FROM postgres:16-alpine
 
-EXPOSE 5432
+COPY init-multiple-databases.sh /docker-entrypoint-initdb.d/init-multiple-databases.sh
 
-CMD ["postgres"]
+RUN chmod +x /docker-entrypoint-initdb.d/init-multiple-databases.sh
+
+EXPOSE 5432
