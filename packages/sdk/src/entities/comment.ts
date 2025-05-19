@@ -1,13 +1,18 @@
+/* ---------- External ---------- */
+import request, { gql } from "graphql-request";
+
 /* ---------- Models ---------- */
 import { Models } from "@aeg-poc/models";
 
 /**
  * @description
- * Categories class for managing category-related operations.
+ * Comments class for managing comment-related operations.
  */
 export class Comments {
-  constructor() {
-    console.log("Comments class instantiated");
+  url: string;
+
+  constructor({ url }: { url?: string }) {
+    this.url = url ?? "http://localhost:4003/graphql";
   }
 
   /**
@@ -27,19 +32,69 @@ export class Comments {
       throw new Error("Comment not found");
     }
 
-    // Simulate a comment lookup in the database
-    const comment = {
+    const query = gql`
+      query getCommentById($id: ID!) {
+        getCommentById(id: $id) {
+          id
+          content
+          userId
+          postId
+          createdAt
+          updatedAt
+        }
+      }
+    `;
+
+    const comment = await request<{ getCommentById: Models.Comment }>(this.url, query, {
       id,
-      content: "This is a sample comment.",
-      userId: 1,
-      postId: 1,
-      created_at: new Date().getTime(),
-      updated_at: new Date().getTime(),
-    };
+    });
 
-    Models.Comment.deserialize(comment);
+    if (!comment?.getCommentById) {
+      throw new Error("Comment not found");
+    }
 
-    return comment as unknown as Models.Comment;
+    return comment.getCommentById;
+  }
+
+  /**
+   * @description
+   * Finds comments by their IDs.
+   *
+   * @param ids Array of comment IDs
+   * @returns {Models.Comment[]} Array of comments if found, otherwise throws an error
+   * @throws Error if comment IDs are invalid or comments not found
+   */
+  async findCommentsByIds(ids: number[]): Promise<Models.Comment[]> {
+    if (!ids || ids.length === 0) {
+      throw new Error("Invalid comment IDs");
+    }
+
+    const query = gql`
+      query getCommentsByIds($ids: [ID!]!) {
+        getCommentsByIds(ids: $ids) {
+          id
+          content
+          userId
+          postId
+          createdAt
+          updatedAt
+        }
+      }
+    `;
+
+    const comments = await request<{ getCommentsByIds: Models.Comment[] }>(
+      this.url,
+      query,
+      {
+        ids,
+      },
+    );
+
+    if (!comments?.getCommentsByIds) {
+      throw new Error("Comments not found");
+    }
+
+    return comments.getCommentsByIds;
   }
 
   /**
@@ -55,31 +110,30 @@ export class Comments {
       throw new Error("Invalid post ID");
     }
 
-    // Simulate a comment lookup in the database
-    const comments = [
-      {
-        id: 1,
-        content: "This is a sample comment.",
-        userId: 1,
-        postId,
-        created_at: new Date().getTime(),
-        updated_at: new Date().getTime(),
-      },
-      {
-        id: 2,
-        content: "This is another sample comment.",
-        userId: 2,
-        postId,
-        created_at: new Date().getTime(),
-        updated_at: new Date().getTime(),
-      },
-    ];
+    const query = gql`
+      query getComments($postId: ID!) {
+        getCommentsByPostId(postId: $postId) {
+          id
+          content
+          userId
+          postId
+          createdAt
+          updatedAt
+        }
+      }
+    `;
 
-    for (const comment of comments) {
-      Models.Comment.deserialize(comment);
+    const comments = await request<{ getCommentsByPostId: Models.Comment[] }>(
+      this.url,
+      query,
+      { postId },
+    );
+
+    if (!comments?.getCommentsByPostId) {
+      throw new Error("Comments not found");
     }
 
-    return comments as unknown as Models.Comment[];
+    return comments.getCommentsByPostId;
   }
 
   /**
@@ -95,31 +149,30 @@ export class Comments {
       throw new Error("Invalid user ID");
     }
 
-    // Simulate a comment lookup in the database
-    const comments = [
-      {
-        id: 1,
-        content: "This is a sample comment.",
-        userId,
-        postId: 1,
-        created_at: new Date().getTime(),
-        updated_at: new Date().getTime(),
-      },
-      {
-        id: 2,
-        content: "This is another sample comment.",
-        userId,
-        postId: 2,
-        created_at: new Date().getTime(),
-        updated_at: new Date().getTime(),
-      },
-    ];
+    const query = gql`
+      query getCommentsByUserId($userId: ID!) {
+        getCommentsByUserId(userId: $userId) {
+          id
+          content
+          userId
+          postId
+          createdAt
+          updatedAt
+        }
+      }
+    `;
 
-    for (const comment of comments) {
-      Models.Comment.deserialize(comment);
+    const comments = await request<{ getCommentsByUserId: Models.Comment[] }>(
+      this.url,
+      query,
+      { userId },
+    );
+
+    if (!comments?.getCommentsByUserId) {
+      throw new Error("Comments not found");
     }
 
-    return comments as unknown as Models.Comment[];
+    return comments.getCommentsByUserId;
   }
 
   /**
@@ -146,17 +199,24 @@ export class Comments {
       throw new Error("Invalid user ID");
     }
 
-    // Simulate comment creation in the database
-    const newComment = {
-      id: Math.floor(Math.random() * 1000), // Simulate auto-increment ID
-      content,
-      userId,
-      postId,
-      created_at: new Date().getTime(),
-      updated_at: new Date().getTime(),
-    };
+    const mutation = gql`
+      mutation createComment($content: String!, $postId: ID!, $userId: ID!) {
+        createComment(content: $content, postId: $postId, userId: $userId) {
+          id
+          content
+          userId
+          postId
+          createdAt
+          updatedAt
+        }
+      }
+    `;
 
-    Models.Comment.deserialize(newComment);
+    const newComment = await request<Models.Comment>(this.url, mutation, {
+      content,
+      postId,
+      userId,
+    });
 
     return newComment as unknown as Models.Comment;
   }
@@ -182,19 +242,25 @@ export class Comments {
       throw new Error("Invalid comment content");
     }
 
-    // Simulate a comment update in the database
-    const updatedComment = {
+    const mutation = gql`
+      mutation updateComment($id: ID!, $content: String!) {
+        updateComment(id: $id, content: $content) {
+          id
+          content
+          userId
+          postId
+          createdAt
+          updatedAt
+        }
+      }
+    `;
+
+    const updatedComment = await request<Models.Comment>(this.url, mutation, {
       id,
       content,
-      userId: 1,
-      postId: 1,
-      created_at: new Date().getTime(),
-      updated_at: new Date().getTime(),
-    };
+    });
 
-    Models.Comment.deserialize(updatedComment);
-
-    return updatedComment as unknown as Models.Comment;
+    return updatedComment;
   }
 
   /**
@@ -209,7 +275,14 @@ export class Comments {
       throw new Error("Invalid comment ID");
     }
 
-    // Simulate a comment deletion in the database
-    console.log(`Comment with ID ${id} deleted`);
+    const mutation = gql`
+      mutation deleteComment($id: ID!) {
+        deleteComment(id: $id) {
+          id
+        }
+      }
+    `;
+
+    await request<Models.Comment>(this.url, mutation, { id });
   }
 }

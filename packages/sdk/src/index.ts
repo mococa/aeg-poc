@@ -33,10 +33,10 @@ export class AegSDK {
    */
   posts: Posts;
 
-  constructor() {
-    this.users = new Users();
-    this.comments = new Comments();
-    this.categories = new Categories();
-    this.posts = new Posts();
+  constructor(gatewayUrl?: string) {
+    this.users = new Users({ url: gatewayUrl });
+    this.posts = new Posts({ url: gatewayUrl });
+    this.comments = new Comments({ url: gatewayUrl });
+    this.categories = new Categories({ url: gatewayUrl });
   }
 }

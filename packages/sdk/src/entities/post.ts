@@ -1,13 +1,16 @@
 /* ---------- Models ---------- */
 import { Models } from "@aeg-poc/models";
+import request, { gql } from "graphql-request";
 
 /**
  * @description
  * Posts class for managing post-related operations.
  */
 export class Posts {
-  constructor() {
-    console.log("Posts class instantiated");
+  url: string;
+
+  constructor({ url }: { url?: string }) {
+    this.url = url ?? "http://localhost:4002/graphql";
   }
 
   /**
@@ -23,24 +26,62 @@ export class Posts {
       throw new Error("Invalid post ID");
     }
 
-    if (id > 1) {
+    const query = gql`
+      query getPostById($id: ID!) {
+        getPostById(id: $id) {
+          id
+          title
+          content
+          userId
+          categoryId
+          createdAt
+          updatedAt
+        }
+      }
+    `;
+
+    const post = await request<{ getPostById: Models.Post }>(this.url, query, { id });
+    if (!post?.getPostById) {
       throw new Error("Post not found");
     }
 
-    // Simulate a post lookup in the database
-    const post = {
-      id,
-      title: "Sample Post",
-      content: "This is a sample post.",
-      userId: 1,
-      categoryId: 1,
-      created_at: new Date().getTime(),
-      updated_at: new Date().getTime(),
-    };
+    return post.getPostById;
+  }
 
-    Models.Post.deserialize(post);
+  /**
+   * @description
+   * Finds multiple posts by their IDs.
+   *
+   * @param ids Array of post IDs
+   * @throws Error if post IDs are invalid or posts not found
+   * @returns {Models.Post[]} Array of posts if found, otherwise throws an error
+   */
+  async findPostsByIds(ids: number[]): Promise<Models.Post[]> {
+    if (!ids || ids.length === 0) {
+      throw new Error("Invalid post IDs");
+    }
 
-    return post as unknown as Models.Post;
+    const query = gql`
+      query getPostsByIds($ids: [ID!]!) {
+        getPostsByIds(ids: $ids) {
+          id
+          title
+          content
+          userId
+          categoryId
+          createdAt
+          updatedAt
+        }
+      }
+    `;
+
+    const posts = await request<{ getPostsByIds: Models.Post[] }>(this.url, query, { ids });
+
+    if (!posts?.getPostsByIds) {
+      throw new Error("Posts not found");
+    }
+
+    return posts.getPostsByIds;
   }
 
   /**
@@ -56,31 +97,29 @@ export class Posts {
       throw new Error("Invalid user ID");
     }
 
-    // Simulate a post lookup in the database
-    const posts = [
-      {
-        id: 1,
-        title: "Sample Post 1",
-        content: "This is a sample post.",
-        userId,
-        categoryId: 1,
-        created_at: new Date().getTime(),
-        updated_at: new Date().getTime(),
-      },
-      {
-        id: 2,
-        title: "Sample Post 2",
-        content: "This is another sample post.",
-        userId,
-        categoryId: 1,
-        created_at: new Date().getTime(),
-        updated_at: new Date().getTime(),
-      },
-    ];
+    const query = gql`
+      query getPostsByUserId($userId: ID!) {
+        getPostsByUserId(userId: $userId) {
+          id
+          title
+          content
+          userId
+          categoryId
+          createdAt
+          updatedAt
+        }
+      }
+    `;
 
-    posts.forEach((post) => Models.Post.deserialize(post));
+    const posts = await request<{ getPostsByUserId: Models.Post[] }>(this.url, query, {
+      userId,
+    });
 
-    return posts as unknown as Models.Post[];
+    if (!posts?.getPostsByUserId) {
+      throw new Error("Posts not found");
+    }
+
+    return posts.getPostsByUserId;
   }
 
   /**
@@ -96,31 +135,29 @@ export class Posts {
       throw new Error("Invalid category ID");
     }
 
-    // Simulate a post lookup in the database
-    const posts = [
-      {
-        id: 1,
-        title: "Sample Post 1",
-        content: "This is a sample post.",
-        userId: 1,
-        categoryId,
-        created_at: new Date().getTime(),
-        updated_at: new Date().getTime(),
-      },
-      {
-        id: 2,
-        title: "Sample Post 2",
-        content: "This is another sample post.",
-        userId: 1,
-        categoryId,
-        created_at: new Date().getTime(),
-        updated_at: new Date().getTime(),
-      },
-    ];
+    const query = gql`
+      query getPostsByCategoryId($categoryId: ID!) {
+        getPostsByCategoryId(categoryId: $categoryId) {
+          id
+          title
+          content
+          userId
+          categoryId
+          createdAt
+          updatedAt
+        }
+      }
+    `;
 
-    posts.forEach((post) => Models.Post.deserialize(post));
+    const posts = await request<{ getPostsByCategoryId: Models.Post[] }>(this.url, query, {
+      categoryId,
+    });
 
-    return posts as unknown as Models.Post[];
+    if (!posts?.getPostsByCategoryId) {
+      throw new Error("Posts not found");
+    }
+
+    return posts.getPostsByCategoryId;
   }
 
   /**
@@ -132,7 +169,10 @@ export class Posts {
    * @returns {Models.Post[]} Array of posts if found, otherwise throws an error
    * @throws Error if user ID or category ID is invalid or post not found
    */
-  async findPostsByUserIdAndCategoryId(userId: number, categoryId: number): Promise<Models.Post[]> {
+  async findPostsByUserIdAndCategoryId(
+    userId: number,
+    categoryId: number,
+  ): Promise<Models.Post[]> {
     if (userId <= 0) {
       throw new Error("Invalid user ID");
     }
@@ -141,31 +181,34 @@ export class Posts {
       throw new Error("Invalid category ID");
     }
 
-    // Simulate a post lookup in the database
-    const posts = [
+    const query = gql`
+      query getPostsByUserIdAndCategoryId($userId: ID!, $categoryId: ID!) {
+        getPostsByUserIdAndCategoryId(userId: $userId, categoryId: $categoryId) {
+          id
+          title
+          content
+          userId
+          categoryId
+          createdAt
+          updatedAt
+        }
+      }
+    `;
+
+    const posts = await request<{ getPostsByUserIdAndCategoryId: Models.Post[] }>(
+      this.url,
+      query,
       {
-        id: 1,
-        title: "Sample Post 1",
-        content: "This is a sample post.",
         userId,
         categoryId,
-        created_at: new Date().getTime(),
-        updated_at: new Date().getTime(),
       },
-      {
-        id: 2,
-        title: "Sample Post 2",
-        content: "This is another sample post.",
-        userId,
-        categoryId,
-        created_at: new Date().getTime(),
-        updated_at: new Date().getTime(),
-      },
-    ];
+    );
 
-    posts.forEach((post) => Models.Post.deserialize(post));
+    if (!posts?.getPostsByUserIdAndCategoryId) {
+      throw new Error("Posts not found");
+    }
 
-    return posts as unknown as Models.Post[];
+    return posts.getPostsByUserIdAndCategoryId;
   }
 
   /**
@@ -180,21 +223,62 @@ export class Posts {
     categoryId,
     content,
     userId,
-  }: Pick<Models.Post, "title" | "content" | "userId" | "categoryId">): Promise<Models.Post> {
-    // Simulate a post creation in the database
-    const post = {
-      id: 1,
+  }: Pick<
+    Models.Post,
+    "title" | "content" | "userId" | "categoryId"
+  >): Promise<Models.Post> {
+    if (!title) {
+      throw new Error("Invalid post title");
+    }
+
+    if (!content) {
+      throw new Error("Invalid post content");
+    }
+
+    if (userId <= 0) {
+      throw new Error("Invalid user ID");
+    }
+
+    if (categoryId <= 0) {
+      throw new Error("Invalid category ID");
+    }
+
+    const mutation = gql`
+      mutation createPost(
+        $title: String!
+        $content: String!
+        $userId: ID!
+        $categoryId: ID!
+      ) {
+        createPost(
+          title: $title
+          content: $content
+          userId: $userId
+          categoryId: $categoryId
+        ) {
+          id
+          title
+          content
+          userId
+          categoryId
+          createdAt
+          updatedAt
+        }
+      }
+    `;
+
+    const post = await request<{ createPost: Models.Post }>(this.url, mutation, {
       title,
       content,
       userId,
       categoryId,
-      created_at: new Date().getTime(),
-      updated_at: new Date().getTime(),
-    };
+    });
 
-    Models.Post.deserialize(post);
+    if (!post?.createPost) {
+      throw new Error("Post not found");
+    }
 
-    return post as unknown as Models.Post;
+    return post.createPost;
   }
 
   /**
@@ -216,20 +300,39 @@ export class Posts {
       throw new Error("Invalid post ID");
     }
 
-    // Simulate a post update in the database
-    const post = {
+    if (!title) {
+      throw new Error("Invalid post title");
+    }
+
+    if (!content) {
+      throw new Error("Invalid post content");
+    }
+
+    const mutation = gql`
+      mutation updatePost($id: ID!, $title: String!, $content: String!) {
+        updatePost(id: $id, title: $title, content: $content) {
+          id
+          title
+          content
+          userId
+          categoryId
+          createdAt
+          updatedAt
+        }
+      }
+    `;
+
+    const post = await request<{ updatePost: Models.Post }>(this.url, mutation, {
       id,
       title,
       content,
-      userId: 1,
-      categoryId: 1,
-      created_at: new Date().getTime(),
-      updated_at: new Date().getTime(),
-    };
+    });
 
-    Models.Post.deserialize(post);
+    if (!post?.updatePost) {
+      throw new Error("Post not found");
+    }
 
-    return post as unknown as Models.Post;
+    return post.updatePost;
   }
 
   /**
@@ -244,7 +347,14 @@ export class Posts {
       throw new Error("Invalid post ID");
     }
 
-    // Simulate a post deletion in the database
-    console.log(`Post with ID ${id} deleted`);
+    const mutation = gql`
+      mutation deletePostById($id: ID!) {
+        deletePostById(id: $id) {
+          id
+        }
+      }
+    `;
+
+    await request<Models.Post>(this.url, mutation, { id });
   }
 }

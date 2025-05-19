@@ -5,6 +5,10 @@
   "main": "src/index.ts",
   "license": "MIT",
   "dependencies": {
-    "@aeg-poc/models": "*"
+    "@aeg-poc/models": "*",
+    "graphql-request": "^7.1.2"
+  },
+  "devDependencies": {
+    "@types/pg": "^8.15.2"
   }
 }

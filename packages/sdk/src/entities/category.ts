@@ -1,13 +1,16 @@
 /* ---------- Models ---------- */
 import { Models } from "@aeg-poc/models";
+import request, { gql } from "graphql-request";
 
 /**
  * @description
  * Categories class for managing category-related operations.
  */
 export class Categories {
-  constructor() {
-    console.log("Categories class instantiated");
+  url?: string;
+
+  constructor({ url }: { url: string }) {
+    this.url = url ?? "http://localhost:4004/graphql";
   }
 
   /**
@@ -18,26 +21,70 @@ export class Categories {
    * @returns {Models.Category} Category if found, otherwise throws an error
    * @throws Error if category ID is invalid or category not found
    */
-  findCategoryById(id: number): Models.Category {
-    if (id <= 0) {
+  async findCategoryById(id: number): Promise<Models.Category> {
+    if (id < 0) {
       throw new Error("Invalid category ID");
     }
 
-    if (id > 1) {
+    const query = gql`
+      query getCategoryById($id: ID!) {
+        getCategoryById(id: $id) {
+          id
+          name
+          createdAt
+          updatedAt
+        }
+      }
+    `;
+
+    const category = await request<{ getCategoryById: Models.Category }>(this.url, query, {
+      id,
+    });
+
+    if (!category?.getCategoryById) {
       throw new Error("Category not found");
     }
 
-    // Simulate a category lookup in the database
-    const category = {
-      id,
-      name: "Sample Category",
-      created_at: new Date().getTime(),
-      updated_at: new Date().getTime(),
-    };
+    return category.getCategoryById;
+  }
 
-    Models.Category.deserialize(category);
+  /**
+   * @description
+   * Finds categories by their IDs.
+   *
+   * @param ids Array of category IDs
+   * @returns {Models.Category[]} Array of categories if found, otherwise throws an error
+   * @throws Error if category IDs are invalid or categories not found
+   */
+  async findCategoriesByIds(ids: number[]): Promise<Models.Category[]> {
+    if (!ids || ids.length === 0) {
+      throw new Error("Invalid category IDs");
+    }
 
-    return category as unknown as Models.Category;
+    const query = gql`
+      query getCategoriesByIds($ids: [ID!]!) {
+        getCategoriesByIds(ids: $ids) {
+          id
+          name
+          createdAt
+          updatedAt
+        }
+      }
+    `;
+
+    const categories = await request<{ getCategoriesByIds: Models.Category[] }>(
+      this.url,
+      query,
+      {
+        ids,
+      },
+    );
+
+    if (!categories?.getCategoriesByIds) {
+      throw new Error("Categories not found");
+    }
+
+    return categories.getCategoriesByIds;
   }
 
   /**
@@ -48,26 +95,33 @@ export class Categories {
    * @returns {Models.Category} Category if found, otherwise throws an error
    * @throws Error if category name is invalid or category not found
    */
-  findCategoryByName(name: string): Models.Category {
+  async findCategoryByName(name: string): Promise<Models.Category> {
     if (!name) {
       throw new Error("Invalid category name");
     }
 
-    if (name !== "Sample Category") {
+    const query = gql`
+      query getCategoryByName($name: String!) {
+        getCategoryByName(name: $name) {
+          id
+          name
+          createdAt
+          updatedAt
+        }
+      }
+    `;
+
+    const category = await request<{ getCategoryByName: Models.Category }>(
+      this.url,
+      query,
+      { name },
+    );
+
+    if (!category?.getCategoryByName) {
       throw new Error("Category not found");
     }
 
-    // Simulate a category lookup in the database
-    const category = {
-      id: 1,
-      name,
-      created_at: new Date().getTime(),
-      updated_at: new Date().getTime(),
-    };
-
-    Models.Category.deserialize(category);
-
-    return category as unknown as Models.Category;
+    return category.getCategoryByName;
   }
 
   /**
@@ -76,29 +130,24 @@ export class Categories {
    *
    * @returns {Models.Category[]} Array of categories
    */
-  findAllCategories(): Models.Category[] {
-    // Simulate a category lookup in the database
-    const categories = [
-      {
-        id: 1,
-        name: "Sample Category 1",
-        created_at: new Date().getTime(),
-        updated_at: new Date().getTime(),
-      },
-      {
-        id: 2,
-        name: "Sample Category 2",
-        created_at: new Date().getTime(),
-        updated_at: new Date().getTime(),
-      },
-    ];
+  async findAllCategories(): Promise<Models.Category[]> {
+    const query = gql`
+      query getCategories {
+        getCategories {
+          id
+          name
+          createdAt
+          updatedAt
+        }
+      }
+    `;
 
-    // Deserialize each category
-    for (const category of categories) {
-      Models.Category.deserialize(category);
+    const categories = await request<{ getCategories: Models.Category[] }>(this.url, query);
+    if (!categories?.getCategories) {
+      throw new Error("Categories not found");
     }
 
-    return categories as unknown as Models.Category[];
+    return categories.getCategories;
   }
 
   /**
@@ -108,22 +157,25 @@ export class Categories {
    * @param name Category's name
    * @returns {Models.Category} Newly created category
    */
-  createCategory(name: string): Models.Category {
+  async createCategory(name: string): Promise<Models.Category> {
     if (!name) {
       throw new Error("Invalid category name");
     }
 
-    // Simulate a category creation in the database
-    const category = {
-      id: 1,
-      name,
-      created_at: new Date().getTime(),
-      updated_at: new Date().getTime(),
-    };
+    const mutation = gql`
+      mutation createCategory($name: String!) {
+        createCategory(name: $name) {
+          id
+          name
+          createdAt
+          updatedAt
+        }
+      }
+    `;
 
-    Models.Category.deserialize(category);
+    const category = await request<Models.Category>(this.url, mutation, { name });
 
-    return category as unknown as Models.Category;
+    return category;
   }
 
   /**
@@ -134,21 +186,27 @@ export class Categories {
    * @param name Category's new name
    * @returns {Models.Category} Updated category
    */
-  updateCategory(id: number, name: string): Models.Category {
+  async updateCategory(id: number, name: string): Promise<Models.Category> {
     if (id <= 0) {
       throw new Error("Invalid category ID");
     }
     if (!name) {
       throw new Error("Invalid category name");
     }
-    // Simulate a category update in the database
-    const category = {
-      id,
-      name,
-      created_at: new Date().getTime(),
-      updated_at: new Date().getTime(),
-    };
-    Models.Category.deserialize(category);
+
+    const mutation = gql`
+      mutation updateCategory($id: ID!, $name: String!) {
+        updateCategory(id: $id, name: $name) {
+          id
+          name
+          createdAt
+          updatedAt
+        }
+      }
+    `;
+
+    const category = await request<Models.Category>(this.url, mutation, { id, name });
+
     return category as unknown as Models.Category;
   }
 
@@ -159,11 +217,19 @@ export class Categories {
    * @param id Category ID
    * @throws Error if category ID is invalid or category not found
    */
-  deleteCategory(id: number): void {
+  async deleteCategory(id: number): Promise<void> {
     if (id <= 0) {
       throw new Error("Invalid category ID");
     }
-    // Simulate a category deletion in the database
-    console.log(`Category with ID ${id} deleted`);
+
+    const mutation = gql`
+      mutation deleteCategoryById($id: ID!) {
+        deleteCategory(id: $id) {
+          id
+        }
+      }
+    `;
+
+    await request(this.url, mutation, { id });
   }
 }

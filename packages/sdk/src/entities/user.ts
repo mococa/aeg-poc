@@ -1,32 +1,48 @@
+/* ---------- External ---------- */
+import request, { gql } from "graphql-request";
+
 /* ---------- Models ---------- */
 import { Models } from "@aeg-poc/models";
+
+/* ---------- Utils ---------- */
+import { Hashing } from "@aeg-poc/utils";
 
 /**
  * @description
  * Users class for managing user-related operations.
  */
 export class Users {
-  constructor() {
-    console.log("Users class instantiated");
+  url: string;
+
+  constructor({ url }: { url?: string }) {
+    this.url = url ?? "http://localhost:4001/graphql";
   }
 
+  /**
+   * @description
+   * Finds all users in the database.
+   *
+   * @returns {Models.User[]} Array of users
+   */
   async findAllUsers(): Promise<Models.User[]> {
-    // Simulate a user lookup in the database
-    const users = [
-      {
-        id: 1,
-        username: "john_doe",
-        password: "hashed_password",
-        created_at: new Date().getTime(),
-        updated_at: new Date().getTime(),
-      },
-    ];
+    const query = gql`
+      query getUsers {
+        getUsers {
+          id
+          username
+          password
+          created_at
+          updated_at
+        }
+      }
+    `;
 
-    for (const user of users) {
-      Models.User.deserialize(user);
+    const users = await request<{ getUsers: Models.User[] }>(this.url, query);
+    if (!users?.getUsers) {
+      throw new Error("Users not found");
     }
 
-    return users as unknown as Models.User[];
+    return users.getUsers;
   }
 
   /**
@@ -42,22 +58,58 @@ export class Users {
       throw new Error("Invalid user ID");
     }
 
-    if (id > 1) {
+    const query = gql`
+      query getUserById($id: ID!) {
+        getUserById(id: $id) {
+          id
+          username
+          password
+          createdAt
+          updatedAt
+        }
+      }
+    `;
+
+    const user = await request<{ getUserById: Models.User }>(this.url, query, { id: +id });
+
+    if (!user?.getUserById) {
       throw new Error("User not found");
     }
 
-    // Simulate a user lookup in the database
-    const user = {
-      id,
-      username: "john_doe",
-      password: "hashed_password",
-      created_at: new Date().getTime(),
-      updated_at: new Date().getTime(),
-    };
+    return user.getUserById;
+  }
 
-    Models.User.deserialize(user);
+  /**
+   * @description
+   * Finds users by their IDs.
+   *
+   * @param ids Array of user IDs
+   * @returns {Models.User[]} Array of users if found, otherwise throws an error
+   * @throws Error if user IDs are invalid or users not found
+   */
+  async findUsersByIds(ids: number[]): Promise<Models.User[]> {
+    if (!ids || ids.length === 0) {
+      throw new Error("Invalid user IDs");
+    }
 
-    return user as unknown as Models.User;
+    const query = gql`
+      query getUsersByIds($ids: [ID!]!) {
+        getUsersByIds(ids: $ids) {
+          id
+          username
+          password
+          createdAt
+          updatedAt
+        }
+      }
+    `;
+
+    const users = await request<{ getUsersByIds: Models.User[] }>(this.url, query, { ids });
+    if (!users?.getUsersByIds) {
+      throw new Error("Users not found");
+    }
+
+    return users.getUsersByIds;
   }
 
   /**
@@ -72,23 +124,26 @@ export class Users {
     if (!username) {
       throw new Error("Invalid username");
     }
+    const query = gql`
+      query getUserByUsername($username: String!) {
+        getUserByUsername(username: $username) {
+          id
+          username
+          password
+          created_at
+          updated_at
+        }
+      }
+    `;
 
-    if (username !== "john_doe") {
+    const user = await request<{ getUserByUsername: Models.User }>(this.url, query, {
+      username,
+    });
+    if (!user?.getUserByUsername) {
       throw new Error("User not found");
     }
 
-    // Simulate a user lookup in the database
-    const user = {
-      id: 1,
-      username,
-      password: "hashed_password",
-      created_at: new Date().getTime(),
-      updated_at: new Date().getTime(),
-    };
-
-    Models.User.deserialize(user as unknown as Record<string, unknown>);
-
-    return user as unknown as Models.User;
+    return user.getUserByUsername;
   }
 
   /**
@@ -104,18 +159,36 @@ export class Users {
       throw new Error("Invalid username or password");
     }
 
-    // Simulate a user creation in the database
-    const user = {
-      id: 1,
+    if (username.length < 3 || username.length > 10) {
+      throw new Error("Username must be between 3 and 10 characters");
+    }
+
+    if (password.length < 8 || password.length > 24) {
+      throw new Error("Password must be between 8 and 24 characters");
+    }
+
+    const mutation = gql`
+      mutation createUser($username: String!, $password: String!) {
+        createUser(username: $username, password: $password) {
+          id
+          username
+          password
+          created_at
+          updated_at
+        }
+      }
+    `;
+
+    const user = await request<{ createUser: Models.User }>(this.url, mutation, {
       username,
-      password: "hashed_password",
-      created_at: new Date().getTime(),
-      updated_at: new Date().getTime(),
-    };
+      password: Hashing.generate(password),
+    });
 
-    Models.User.deserialize(user as unknown as Record<string, unknown>);
+    if (!user?.createUser) {
+      throw new Error("User creation failed");
+    }
 
-    return user as unknown as Models.User;
+    return user.createUser;
   }
 
   async deleteUser(id: number): Promise<void> {
@@ -123,7 +196,14 @@ export class Users {
       throw new Error("Invalid user ID");
     }
 
-    // Simulate user deletion
-    console.log(`User with ID ${id} deleted`);
+    const mutation = gql`
+      mutation deleteUserById($id: ID!) {
+        deleteUserById(id: $id) {
+          id
+        }
+      }
+    `;
+
+    await request(this.url, mutation, { id });
   }
 }
