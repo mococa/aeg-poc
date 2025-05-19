@@ -5,11 +5,14 @@
   "main": "dist/index.js",
   "license": "MIT",
   "scripts": {
-    "build": "esbuild --bundle --platform=node --target=node18 --outdir=dist src/index.ts --minify",
+    "build": "esbuild --bundle --platform=node --target=node20 --outdir=dist src/index.ts --minify",
     "start": "node dist/index.js",
-    "serve": "npm run build && npm run start"
+    "serve": "npm run build && npm run start",
+    "dev:watch": "esbuild --bundle --platform=node --target=node20 --outdir=dist src/index.ts --watch=forever",
+    "dev:start": "node --watch ./dist/index.js",
+    "dev": "npm run dev:watch & npm run dev:start"
   },
   "dependencies": {
-    "@aeg-poc/schemas": "*"
+    "pg": "^8.16.0"
   }
 }

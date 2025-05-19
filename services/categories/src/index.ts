@@ -9,29 +9,29 @@ import { createDataLoaders } from "@aeg-poc/utils";
 /* ---------- SDK ---------- */
 import { AegSDK } from "@aeg-poc/sdk";
 
-/* ---------- Database ---------- */
-import { PostsDatabase, PostsRepository } from "./database";
+/* ---------- Service ---------- */
+import { CategoriesDatabase, CategoriesRepository } from "./database";
 
 /* ---------- Schema ---------- */
-import { PostSchema } from "./schema";
+import { CategorySchema } from "./schema";
 
 /* ---------- Constants ---------- */
-const port = Number(process.env.PORT ?? 4002);
+const port = Number(process.env.PORT ?? 4004);
 if (!port) {
-  console.error("posts PORT is not defined in .env file. Using default port 4002.");
+  console.error("categories PORT is not defined in .env file. Using default port 4004.");
 }
 
 /**
  * @description
- * This is the main entry point for the Posts service.
- * It creates an instance of ApolloServer and sets up the server to listen on port 4002.
+ * This is the main entry point for the Categories service.
+ * It creates an instance of ApolloServer and sets up the server to listen on port 4004.
  */
 async function startServer() {
-  const database = new PostsDatabase();
+  const database = new CategoriesDatabase();
   await database.createTables();
 
-  const repository = new PostsRepository(database);
-  const { schema } = new PostSchema(repository);
+  const repository = new CategoriesRepository(database);
+  const { schema } = new CategorySchema(repository);
 
   const server = new ApolloServer({
     schema: buildSubgraphSchema([schema]),
@@ -44,7 +44,7 @@ async function startServer() {
     listen: { port },
   });
 
-  console.log(`🚀 Posts service ready at ${url}`);
+  console.log(`🚀 Categories service ready at ${url}`);
 }
 
 startServer();

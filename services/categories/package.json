@@ -1,5 +1,5 @@
 {
-  "name": "@aeg-poc/posts-service",
+  "name": "@aeg-poc/categories-service",
   "private": true,
   "version": "1.0.0",
   "main": "dist/index.js",
@@ -13,7 +13,6 @@
     "dev": "npm run dev:watch & npm run dev:start"
   },
   "dependencies": {
-    "dataloader": "^2.2.3",
     "pg": "^8.16.0"
   }
 }

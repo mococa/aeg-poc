@@ -12,10 +12,10 @@ COPY ./package.json ./package.json
 
 # Set environment variables
 ENV NODE_ENV production
-ENV PORT 80
+ENV PORT 4001
 
 # Expose the desired port
-EXPOSE 80
+EXPOSE 4001
 
 # Start the application
 CMD ["npm", "run", "start"]
