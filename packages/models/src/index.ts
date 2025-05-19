@@ -53,7 +53,6 @@ export class BaseModel {
       }
     `;
   }
-
 }
 
 export namespace Models {
@@ -80,6 +79,8 @@ export namespace Models {
           id: ID!
           username: String!
           password: String!
+          createdAt: String!
+          updatedAt: String!
         }
       `;
     }
@@ -127,9 +128,8 @@ export namespace Models {
           content: String!
           userId: ID!
           categoryId: ID!
-          user: User @external
-          category: Category @external
-          comments: [Comment] @external
+          createdAt: String!
+          updatedAt: String!
         }
       `;
     }
@@ -158,8 +158,8 @@ export namespace Models {
           id: ID!
           name: String!
           description: String!
-          posts: [Post] @external
-          comments: [Comment] @external
+          createdAt: String!
+          updatedAt: String!
         }
       `;
     }
@@ -200,8 +200,8 @@ export namespace Models {
           content: String!
           userId: ID!
           postId: ID!
-          user: User @external
-          post: Post @external
+          createdAt: String!
+          updatedAt: String!
         }
       `;
     }
