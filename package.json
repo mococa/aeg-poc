@@ -9,7 +9,8 @@
     "services/*"
   ],
   "scripts": {
-    "build": "yarn workspace @aeg-poc/builder run start",
-    "start:api": "yarn workspace @aeg-poc/api-starter run start"
+    "scripts": "yarn workspace @aeg-poc/scripts run serve",
+    "build": "yarn scripts build",
+    "start:api": "yarn scripts start"
   }
 }
