@@ -4,7 +4,8 @@
     "noImplicitAny": false,
     "jsx": "preserve",
     "skipLibCheck": true,
-    "baseUrl": "."
+    "baseUrl": ".",
+    "esModuleInterop": true
   },
   "exclude": ["dist", "node_modules"]
 }
