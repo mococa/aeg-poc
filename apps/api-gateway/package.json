@@ -11,6 +11,7 @@
     "predev": "npm run build"
   },
   "dependencies": {
+    "@aeg-poc/utils": "*",
     "@apollo/gateway": "^2.10.2"
   }
 }

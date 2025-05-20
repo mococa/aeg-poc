@@ -6,6 +6,7 @@
   "license": "MIT",
   "dependencies": {
     "@aeg-poc/models": "*",
+    "@aeg-poc/utils": "*",
     "graphql-request": "^7.1.2"
   },
   "devDependencies": {

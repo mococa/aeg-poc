@@ -1,6 +1,11 @@
+/* ---------- External ---------- */
+import request, { gql } from "graphql-request";
+
 /* ---------- Models ---------- */
 import { Models } from "@aeg-poc/models";
-import request, { gql } from "graphql-request";
+
+/* ---------- Utils ---------- */
+import { getServiceUrl } from "@aeg-poc/utils";
 
 /**
  * @description
@@ -10,7 +15,7 @@ export class Categories {
   url?: string;
 
   constructor({ url }: { url: string }) {
-    this.url = url ?? "http://localhost:4004/graphql";
+    this.url = url ?? getServiceUrl("categories");
   }
 
   /**

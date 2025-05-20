@@ -2,6 +2,7 @@
 import { ApolloServer } from "@apollo/server";
 import { startStandaloneServer } from "@apollo/server/standalone";
 import { ApolloGateway } from "@apollo/gateway";
+import { getServiceUrl } from "@aeg-poc/utils";
 
 const production = process.env.NODE_ENV === "production";
 
@@ -16,12 +17,12 @@ if (!port) {
  * It also defines the service list for the gateway.
  */
 async function startGateway() {
-  const gateway = new ApolloGateway({
+   const gateway = new ApolloGateway({
     serviceList: [
-      { name: "users", url: "http://localhost:4001/graphql" },
-      { name: "posts", url: "http://localhost:4002/graphql" },
-      { name: "comments", url: "http://localhost:4003/graphql" },
-      { name: "categories", url: "http://localhost:4004/graphql" },
+      { name: "users", url: getServiceUrl("users") },
+      { name: "posts", url: getServiceUrl("posts") },
+      { name: "comments", url: getServiceUrl("comments") },
+      { name: "categories", url: getServiceUrl("categories") },
     ],
   });
 

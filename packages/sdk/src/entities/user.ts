@@ -5,7 +5,7 @@ import request, { gql } from "graphql-request";
 import { Models } from "@aeg-poc/models";
 
 /* ---------- Utils ---------- */
-import { Hashing } from "@aeg-poc/utils";
+import { getServiceUrl, Hashing } from "@aeg-poc/utils";
 
 /**
  * @description
@@ -15,7 +15,7 @@ export class Users {
   url: string;
 
   constructor({ url }: { url?: string }) {
-    this.url = url ?? "http://localhost:4001/graphql";
+    this.url = url ?? getServiceUrl("users");
   }
 
   /**

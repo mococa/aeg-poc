@@ -4,6 +4,9 @@ import request, { gql } from "graphql-request";
 /* ---------- Models ---------- */
 import { Models } from "@aeg-poc/models";
 
+/* ---------- Utils ---------- */
+import { getServiceUrl } from "@aeg-poc/utils";
+
 /**
  * @description
  * Comments class for managing comment-related operations.
@@ -12,7 +15,7 @@ export class Comments {
   url: string;
 
   constructor({ url }: { url?: string }) {
-    this.url = url ?? "http://localhost:4003/graphql";
+    this.url = url ?? getServiceUrl("comments");
   }
 
   /**
