@@ -31,6 +31,11 @@ export class Builder {
         command: "yarn workspace @aeg-poc/comments-service build",
         type: "service",
       },
+      {
+        name: `[${yellow("Service")}] Categories service`,
+        command: "yarn workspace @aeg-poc/categories-service build",
+        type: "service",
+      },
     ];
 
     const messages = {
