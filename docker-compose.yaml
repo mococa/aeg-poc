@@ -1,1 +1,66 @@
-# TODO
+version: "3.8"
+services:
+  database:
+    image: postgres-service:latest
+    build:
+      context: ./apps/database
+    environment:
+      POSTGRES_USER: aeg
+      POSTGRES_PASSWORD: mysecretpassword
+      POSTGRES_MULTIPLE_DATABASES: categories:aeg:mysecretpassword,comments:aeg:mysecretpassword,posts:aeg:mysecretpassword,users:aeg:mysecretpassword
+    ports:
+      - "5432:5432"
+    volumes:
+      - ./apps/database/init-multiple-databases.sh:/docker-entrypoint-initdb.d/init-multiple-databases.sh
+      - ./apps/database/postgres_data:/var/lib/postgresql/data
+  posts:
+    image: posts-service:latest
+    depends_on:
+      - database
+    build:
+      context: ./services/posts
+    environment:
+      DATABASE_URL: postgres://aeg:mysecretpassword@database:5432/posts
+    ports:
+      - "4001:4001"
+  users:
+    image: users-service:latest
+    depends_on:
+      - database
+    build:
+      context: ./services/users
+    environment:
+      DATABASE_URL: postgres://aeg:mysecretpassword@database:5432/users
+    ports:
+      - "4002:4002"
+  comments:
+    image: comments-service:latest
+    depends_on:
+      - database
+    build:
+      context: ./services/comments
+    environment:
+      DATABASE_URL: postgres://aeg:mysecretpassword@database:5432/comments
+    ports:
+      - "4003:4003"
+  categories:
+    image: categories-service:latest
+    depends_on:
+      - database
+    build:
+      context: ./services/categories
+    environment:
+      DATABASE_URL: postgres://aeg:mysecretpassword@database:5432/categories
+    ports:
+      - "4004:4004"
+  api-gateway:
+    image: api-gateway:latest
+    build:
+      context: ./apps/api-gateway
+    ports:
+      - "4000:4000"
+    depends_on:
+      - posts
+      - users
+      - comments
+      - categories
