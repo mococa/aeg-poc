@@ -11,5 +11,12 @@
     "dev:watch": "esbuild --bundle --platform=node --target=node20 --outdir=dist src/index.ts --watch=forever",
     "dev:start": "node --watch ./dist/index.js",
     "dev": "npm run dev:watch & npm run dev:start"
+  },
+  "dependencies": {
+    "execa": "^5.1.1",
+    "listr": "^0.14.3"
+  },
+  "devDependencies": {
+    "@types/listr": "^0.14.9"
   }
 }
