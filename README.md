@@ -4,7 +4,18 @@ Prove-of-concept using Node, Nullstack, GQL and microservices, all in a TypeScri
 monorepository.
 
 This is just a small simple blog project with a few microservices, to test the waters of
-Nullstack and microservices
+Nullstack and microservices.
+
+## 🗂️ Stack
+
+- Nullstack
+- TypeScript
+- Postgres
+- GraphQL
+- Apollo Server
+- Docker
+- Docker Compose
+- Yarn
 
 ## 🧩 Structure
 
@@ -53,9 +64,9 @@ The services are located in the `services` folder. The services are:
 - `@aeg-poc/categories-service`: The categories service for the project, using GraphQL and
   Apollo Server, consuming the Postgres database.
 
-## Getting Started
+## 📚 Getting Started
 
-### Prerequisites
+### 🏁 Prerequisites
 
 - Node.js v20.0 or higher
 - Yarn
@@ -64,7 +75,7 @@ The services are located in the `services` folder. The services are:
 
 --
 
-### Installation
+### 📥 Installation
 
 1. Clone the repository:
 
@@ -88,7 +99,7 @@ This will install all the dependencies for the project, including the packages, 
 services... Everything in one `node_modules` folder. Mind that in order to use workspaces,
 you need a drive that supports it (this excludes FAT32, for example).
 
-### Development
+### 🧑‍💻 Development
 
 To start the development server, you can use the following commands:
 
@@ -103,11 +114,11 @@ yarn build
 docker compose up --build
 ```
 
-#### Building
+#### 🔨 Building
 
 Notice that first we build the project (bundle each service), and then we run the docker
 compose command to start the services. If you check each service Dockerfile, you will see
 that we are not running any build command there, we are just copying the bundled files to
 the docker image. This accelerates the build process.
 
-## Deployment
+## 🚀 Deployment
